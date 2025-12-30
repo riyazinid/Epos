@@ -25,12 +25,12 @@ jobs:
       run: nuget restore Epos/Epos.sln
 
     - name: Build & Publish
-  run: |
-    msbuild Epos/Epos.sln `
-      /p:Configuration=Release `
-      /p:Platform="Any CPU" `
-      /p:DeployOnBuild=true `
-      /p:PublishProfile=FolderProfile
+      run: |
+        msbuild Epos/Epos.sln `
+          /p:Configuration=Release `
+          /p:Platform="Any CPU" `
+          /p:DeployOnBuild=true `
+          /p:PublishProfile=FolderProfile
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
