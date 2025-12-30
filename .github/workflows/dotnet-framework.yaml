@@ -7,28 +7,34 @@ on:
     branches: [ main ]
 
 env:
-  AZURE_WEBAPP_NAME: 'epos-dev'  # Your web app name
-  AZURE_WEBAPP_PACKAGE_PATH: 'Epos/published'
+  AZURE_WEBAPP_NAME: epos-dev
+  ARTIFACT_NAME: epos-app
 
 jobs:
   build:
     runs-on: windows-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.1
-    
+      uses: microsoft/setup-msbuild@v1.3
+
     - name: Restore NuGet packages
       run: nuget restore Epos/Epos.sln
-    
-    - name: Build with MSBuild
+
+    - name: Build & Publish
       run: |
-        msbuild Epos/Epos.sln /p:Configuration=Release /p:Platform="Any CPU" /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:publishUrl=$(Build.ArtifactStagingDirectory)
-    
+        msbuild Epos/Epos.sln `
+          /p:Configuration=Release `
+          /p:Platform="Any CPU" `
+          /p:DeployOnBuild=true `
+          /p:PublishProfile=FolderProfile `
+          /p:publishUrl=published
+
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: epos-app
-        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        name: ${{ env.ARTIFACT_NAME }}
+        path: published/
